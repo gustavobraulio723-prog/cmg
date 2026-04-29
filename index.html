@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Questões de Revisão - Cirurgia Geral</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    header {
+      background: #111827;
+      border: 1px solid #334155;
+      padding: 25px;
+      border-radius: 16px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #38bdf8;
+    }
+
+    header p {
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .question-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 22px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .question-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #f8fafc;
+      line-height: 1.4;
+    }
+
+    .options label {
+      display: block;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      line-height: 1.4;
+    }
+
+    .options label:hover {
+      background: #172554;
+      border-color: #38bdf8;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: #22c55e;
+      color: #052e16;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    .result {
+      display: none;
+      background: #020617;
+      border: 1px solid #38bdf8;
+      padding: 25px;
+      border-radius: 16px;
+      margin-top: 30px;
+    }
+
+    .result h2 {
+      color: #38bdf8;
+      margin-bottom: 15px;
+    }
+
+    .score {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .review-item {
+      background: #111827;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 15px;
+      border-left: 5px solid #64748b;
+    }
+
+    .correct {
+      border-left-color: #22c55e;
+    }
+
+    .wrong {
+      border-left-color: #ef4444;
+    }
+
+    .review-item h3 {
+      margin-bottom: 10px;
+      color: #f8fafc;
+      font-size: 17px;
+    }
+
+    .answer {
+      margin-bottom: 8px;
+    }
+
+    .green {
+      color: #4ade80;
+      font-weight: bold;
+    }
+
+    .red {
+      color: #f87171;
+      font-weight: bold;
+    }
+
+    .explanation {
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .reset-btn {
+      background: #38bdf8;
+      color: #082f49;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+
+      header h1 {
+        font-size: 23px;
+      }
+
+      .question-card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Questões de Revisão - Cirurgia Geral</h1>
+      <p>Responda as questões abaixo. No final, o sistema mostra sua nota, quais você acertou, quais errou e explica o motivo.</p>
+    </header>
+
+    <form id="quizForm"></form>
+
+    <button onclick="corrigirQuiz()">Finalizar e corrigir</button>
+
+    <div class="result" id="resultBox">
+      <h2>Resultado</h2>
+      <div class="score" id="scoreText"></div>
+      <div id="review"></div>
+      <button class="reset-btn" onclick="reiniciarQuiz()">Refazer questões</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "1. Em uma icterícia obstrutiva, qual padrão laboratorial é mais esperado?",
+        options: [
+          "Aumento predominante de amilase e lipase",
+          "Aumento importante de GGT e fosfatase alcalina",
+          "Aumento isolado de hemoglobina",
+          "Redução de bilirrubina direta"
+        ],
+        answer: 1,
+        why: "Na icterícia obstrutiva ocorre padrão colestático, com aumento importante de GGT e fosfatase alcalina. Amilase e lipase sugerem pancreatite, hemoglobina não define obstrução biliar e a bilirrubina direta tende a aumentar, não reduzir."
+      },
+      {
+        q: "2. O sinal de Courvoisier-Terrier sugere qual achado clínico?",
+        options: [
+          "Vesícula palpável, indolor, em paciente ictérico",
+          "Dor intensa no hipocôndrio direito com febre alta",
+          "Ascite volumosa com circulação colateral",
+          "Esplenomegalia dolorosa em paciente febril"
+        ],
+        answer: 0,
+        why: "Courvoisier-Terrier é vesícula palpável e indolor em paciente ictérico, sugerindo obstrução maligna distal. Dor e febre lembram colangite/colecistite, ascite sugere hipertensão portal e esplenomegalia não é o sinal descrito."
+      },
+      {
+        q: "3. Em suspeita de tumor periampular, qual exame costuma ser solicitado inicialmente para avaliação?",
+        options: [
+          "Tomografia de abdome",
+          "Radiografia simples de tórax",
+          "Eletrocardiograma",
+          "Ultrassom de tireoide"
+        ],
+        answer: 0,
+        why: "A tomografia de abdome avalia massa periampular/pancreática, dilatação de vias biliares e estadiamento. Os demais exames não avaliam adequadamente a região periampular."
+      },
+      {
+        q: "4. Sobre o hepatocarcinoma, é correto afirmar:",
+        options: [
+          "A maioria dos casos não tem relação com cirrose",
+          "Sempre exige biópsia antes do tratamento",
+          "Pode ser diagnosticado por imagem típica em paciente cirrótico",
+          "Nunca eleva alfafetoproteína"
+        ],
+        answer: 2,
+        why: "O HCC geralmente está associado à cirrose. Em pacientes cirróticos, imagem típica com realce arterial e washout pode fechar diagnóstico sem biópsia. Alfafetoproteína pode estar elevada, embora não em 100% dos casos."
+      },
+      {
+        q: "5. Qual achado de imagem é típico do hepatocarcinoma?",
+        options: [
+          "Realce venoso tardio persistente sem washout",
+          "Realce arterial com washout na fase portal/tardia",
+          "Imagem exclusivamente cística sem contraste",
+          "Calcificação difusa da vesícula"
+        ],
+        answer: 1,
+        why: "O HCC clássico apresenta hipervascularização arterial e lavagem rápida do contraste, chamada washout. Lesão cística ou calcificação de vesícula não caracterizam HCC."
+      },
+      {
+        q: "6. Em queimados, qual sinal sugere lesão inalatória ou risco de via aérea?",
+        options: [
+          "Queimadura de vibrissas e escarro com fuligem",
+          "Dor isolada no tornozelo",
+          "Melhora da dor ao caminhar",
+          "Edema duro de membro inferior crônico"
+        ],
+        answer: 0,
+        why: "Queimadura de vibrissas, fuligem no escarro, queimadura facial/periorbital e estridor indicam suspeita de lesão inalatória. Os outros achados se relacionam a doenças vasculares ou linfáticas."
+      },
+      {
+        q: "7. Qual sinal indica maior gravidade em queimado por possível edema de laringe?",
+        options: [
+          "Estridor",
+          "Claudicação intermitente",
+          "Vesícula palpável indolor",
+          "Sinal de Stemmer"
+        ],
+        answer: 0,
+        why: "Estridor sugere obstrução de via aérea alta por edema laríngeo e exige atenção imediata. Claudicação é DAOP, vesícula palpável é Courvoisier e Stemmer sugere linfedema."
+      },
+      {
+        q: "8. Qual método faz parte da profilaxia mecânica de TEP/TVP?",
+        options: [
+          "Enoxaparina",
+          "Meia elástica e compressão pneumática",
+          "Warfarina em dose plena para todos",
+          "Trombolítico preventivo"
+        ],
+        answer: 1,
+        why: "Profilaxia mecânica inclui meia elástica, compressão pneumática e deambulação precoce. Enoxaparina é profilaxia química. Trombolítico não é usado como profilaxia de rotina."
+      },
+      {
+        q: "9. Qual medicamento é clássico na profilaxia química de TVP/TEP em muitos pacientes cirúrgicos?",
+        options: [
+          "Enoxaparina",
+          "Dipirona",
+          "Omeprazol",
+          "Furosemida"
+        ],
+        answer: 0,
+        why: "A enoxaparina, uma heparina de baixo peso molecular, é muito usada para profilaxia química de trombose. Dipirona é analgésico, omeprazol é protetor gástrico e furosemida é diurético."
+      },
+      {
+        q: "10. Em paciente com baixa probabilidade clínica de TEP, qual exame pode ser usado para excluir TEP quando negativo?",
+        options: [
+          "Dímero D",
+          "CA 19-9",
+          "Alfafetoproteína",
+          "Punção aspirativa por agulha fina"
+        ],
+        answer: 0,
+        why: "Em baixa probabilidade clínica, dímero D negativo ajuda a excluir TEP. CA 19-9 se relaciona a tumores pancreatobiliares, alfafetoproteína a HCC e PAAF a avaliação de massas."
+      },
+      {
+        q: "11. Se o dímero D vier positivo em suspeita de TEP, qual é a melhor interpretação?",
+        options: [
+          "Confirma TEP obrigatoriamente",
+          "Exclui TEP com segurança",
+          "É inespecífico e pode indicar necessidade de angiotomografia conforme o caso",
+          "Confirma hepatocarcinoma"
+        ],
+        answer: 2,
+        why: "Dímero D positivo é sensível, mas pouco específico. Pode aumentar em cirurgia, câncer, inflamação e outras situações. Em suspeita relevante, segue-se com exame de imagem, como angiotomografia."
+      },
+      {
+        q: "12. Qual exame é mais usado para confirmar TEP quando disponível?",
+        options: [
+          "Angiotomografia de tórax",
+          "Ultrassom de tireoide",
+          "Endoscopia digestiva alta",
+          "Radiografia de joelho"
+        ],
+        answer: 0,
+        why: "A angiotomografia de tórax é exame central para diagnóstico de TEP quando disponível. Os demais exames não avaliam adequadamente embolia pulmonar."
+      },
+      {
+        q: "13. O linfedema costuma apresentar qual característica?",
+        options: [
+          "Edema duro e crônico de membro",
+          "Dor torácica súbita com hipoxemia",
+          "Vesícula palpável indolor",
+          "Realce arterial com washout"
+        ],
+        answer: 0,
+        why: "Linfedema é doença crônica por alteração/obstrução linfática, com edema duro, geralmente em membro superior ou inferior. As outras alternativas correspondem a TEP, Courvoisier e HCC."
+      },
+      {
+        q: "14. O sinal de Stemmer é pesquisado para avaliar principalmente:",
+        options: [
+          "Linfedema",
+          "Hepatocarcinoma",
+          "Aneurisma de aorta abdominal",
+          "Tumor periampular"
+        ],
+        answer: 0,
+        why: "O sinal de Stemmer positivo ocorre quando não se consegue pinçar a pele na base do segundo dedo do pé, sugerindo linfedema. Não é sinal de HCC, AAA ou tumor periampular."
+      },
+      {
+        q: "15. Qual quadro sugere obstrução arterial aguda?",
+        options: [
+          "Dor súbita, palidez e perda de sensibilidade no membro",
+          "Dor crônica ao caminhar que melhora ao repouso",
+          "Edema duro crônico com sinal de Stemmer",
+          "Febre e linfonodo doloroso após amigdalite"
+        ],
+        answer: 0,
+        why: "Obstrução arterial aguda cursa com dor súbita, palidez, parestesia/perda sensitiva, ausência de pulso e risco de isquemia. Dor ao caminhar que melhora ao repouso é claudicação crônica."
+      },
+      {
+        q: "16. Uma causa clássica de embolia arterial aguda é:",
+        options: [
+          "Fibrilação atrial",
+          "Rinite alérgica",
+          "Cisto tireoglosso",
+          "Desvio de septo nasal"
+        ],
+        answer: 0,
+        why: "Na fibrilação atrial, pode haver formação de trombo no átrio, que emboliza para a circulação arterial. As demais alternativas não são causas típicas de embolia arterial aguda."
+      },
+      {
+        q: "17. Na doença arterial obstrutiva crônica, o sintoma típico é:",
+        options: [
+          "Claudicação intermitente",
+          "Estridor laríngeo",
+          "Escarro com fuligem",
+          "Massa cervical infecciosa"
+        ],
+        answer: 0,
+        why: "Claudicação intermitente é dor, peso ou câimbra ao caminhar, com melhora ao repouso, típica de DAOP crônica. Estridor e fuligem remetem a lesão de via aérea."
+      },
+      {
+        q: "18. Em aneurisma de aorta abdominal, qual medida geralmente indica cirurgia em homens assintomáticos?",
+        options: [
+          "> 3,0 cm",
+          "> 4,0 cm",
+          "> 5,5 cm",
+          "> 9,0 cm apenas"
+        ],
+        answer: 2,
+        why: "Em geral, AAA em homens com diâmetro maior que 5,5 cm tem indicação de correção. Valores menores podem ser acompanhados, dependendo do crescimento e sintomas."
+      },
+      {
+        q: "19. Em mulheres, aneurisma de aorta abdominal costuma ter indicação cirúrgica a partir de aproximadamente:",
+        options: [
+          "2,5 cm",
+          "3,0 cm",
+          "5,0 cm",
+          "8,0 cm"
+        ],
+        answer: 2,
+        why: "Em mulheres, muitos protocolos consideram correção em torno de 5,0 cm, além de sintomas ou crescimento rápido. 2,5-3,0 cm geralmente não são indicação isolada."
+      },
+      {
+        q: "20. Paciente com massa cervical mediana que se movimenta com a deglutição/protrusão da língua sugere:",
+        options: [
+          "Cisto tireoglosso",
+          "Aneurisma de aorta abdominal",
+          "TEP",
+          "Hepatocarcinoma"
+        ],
+        answer: 0,
+        why: "Cisto tireoglosso é massa cervical mediana relacionada ao trajeto embrionário da tireoide e pode mover com deglutição/protrusão da língua. As outras alternativas não geram massa cervical mediana típica."
+      },
+      {
+        q: "21. Febre, dor de garganta há poucos dias e linfonodo cervical anterior doloroso sugerem mais provavelmente:",
+        options: [
+          "Processo infeccioso",
+          "Tumor periampular",
+          "AAA roto",
+          "DAOP crônica"
+        ],
+        answer: 0,
+        why: "Quadro agudo com febre, odinofagia/dor de garganta e linfonodo doloroso sugere etiologia infecciosa. Tumores costumam ter curso mais arrastado e sinais de alarme."
+      },
+      {
+        q: "22. Massa cervical com disfagia, rouquidão, tabagismo e etilismo deve levantar suspeita de:",
+        options: [
+          "Neoplasia de cabeça e pescoço",
+          "Cisto tireoglosso simples apenas",
+          "Rinite alérgica",
+          "Linfedema de membro inferior"
+        ],
+        answer: 0,
+        why: "Disfagia, rouquidão, tabagismo e etilismo são sinais de alerta para neoplasia de cabeça e pescoço. Não é típico de rinite, linfedema ou cisto simples sem outros sinais."
+      },
+      {
+        q: "23. Em massa cervical suspeita de malignidade, qual exame pode ser feito para investigação citológica?",
+        options: [
+          "Punção aspirativa por agulha fina",
+          "Dímero D",
+          "Espirometria",
+          "Eletroencefalograma"
+        ],
+        answer: 0,
+        why: "A PAAF é útil para avaliação citológica de massas cervicais. Dímero D avalia trombose/TEP em contexto específico, espirometria avalia função pulmonar e EEG avalia atividade elétrica cerebral."
+      },
+      {
+        q: "24. Abscesso cervical profundo pode evoluir gravemente para:",
+        options: [
+          "Mediastinite",
+          "Hepatocarcinoma",
+          "Aneurisma de aorta abdominal",
+          "Claudicação intermitente"
+        ],
+        answer: 0,
+        why: "Infecções cervicais profundas podem descer pelos espaços fasciais e causar mediastinite, uma complicação grave. As outras opções não são complicações diretas de abscesso cervical."
+      },
+      {
+        q: "25. Em suspeita de abscesso cervical profundo, qual exame de imagem é mais indicado para avaliar extensão?",
+        options: [
+          "Tomografia de pescoço e, se necessário, tórax",
+          "Radiografia de tornozelo",
+          "Colonoscopia",
+          "Ressonância de joelho"
+        ],
+        answer: 0,
+        why: "A tomografia de pescoço avalia coleção, profundidade e extensão. O tórax pode ser avaliado por risco de mediastinite. Os demais exames não são adequados para esse quadro."
+      },
+      {
+        q: "26. A conduta em abscesso cervical profundo com sinais importantes costuma incluir:",
+        options: [
+          "Antibioticoterapia endovenosa e drenagem cirúrgica",
+          "Apenas observação domiciliar",
+          "Somente analgésico oral",
+          "Suspender hidratação e aguardar regressão espontânea"
+        ],
+        answer: 0,
+        why: "Abscesso cervical profundo exige abordagem agressiva com antibiótico EV e drenagem quando indicada, pelo risco de progressão e mediastinite. Observação simples pode ser perigosa."
+      },
+      {
+        q: "27. Obstrução nasal crônica associada a desvio de septo costuma ser avaliada principalmente por:",
+        options: [
+          "Exame otorrinolaringológico/rinoscopia",
+          "Dímero D",
+          "Alfafetoproteína",
+          "Angiotomografia de tórax"
+        ],
+        answer: 0,
+        why: "Desvio de septo e obstrução nasal são avaliados pelo exame otorrinolaringológico, incluindo rinoscopia/endoscopia nasal quando necessário. Os outros exames pertencem a outros contextos."
+      },
+      {
+        q: "28. Paciente oncológico, pós-operatório recente, imobilizado, com edema e dor em membro inferior: principal hipótese é:",
+        options: [
+          "TVP",
+          "Cisto tireoglosso",
+          "HCC",
+          "Desvio de septo"
+        ],
+        answer: 0,
+        why: "Câncer, cirurgia recente e imobilização são fatores de risco importantes para trombose venosa profunda. Edema e dor em membro inferior reforçam a suspeita."
+      },
+      {
+        q: "29. Em TEP, qual conjunto clínico é mais sugestivo?",
+        options: [
+          "Dispneia, dor torácica e hipoxemia em paciente de risco",
+          "Vesícula palpável indolor e icterícia progressiva",
+          "Massa cervical mediana móvel",
+          "Obstrução nasal isolada há anos"
+        ],
+        answer: 0,
+        why: "TEP pode cursar com dispneia súbita, dor torácica, taquicardia e baixa saturação, especialmente em paciente com risco trombótico. As outras alternativas apontam para outras doenças."
+      },
+      {
+        q: "30. Qual marcador tumoral pode estar aumentado em tumores pancreatobiliares/periampulares?",
+        options: [
+          "CA 19-9",
+          "Troponina apenas",
+          "CK-MB apenas",
+          "Dímero D"
+        ],
+        answer: 0,
+        why: "CA 19-9 pode estar aumentado em tumores pancreatobiliares, embora não seja diagnóstico isolado. Troponina/CK-MB se relacionam a lesão miocárdica e dímero D a degradação de fibrina."
+      }
+      ,
+      {
+        q: "31. Na icterícia obstrutiva, além da pele amarelada, quais achados clínicos reforçam colestase?",
+        options: [
+          "Colúria e acolia fecal",
+          "Hemoptise e dor pleurítica",
+          "Poliúria e polidipsia",
+          "Claudicação e pulso diminuído"
+        ],
+        answer: 0,
+        why: "Colestase pode causar icterícia, urina escura, chamada colúria, e fezes claras, chamadas acolia fecal. Hemoptise sugere doença pulmonar, poliúria/polidipsia sugere distúrbio metabólico e claudicação é vascular periférico."
+      },
+      {
+        q: "32. Na investigação de icterícia obstrutiva, quais exames podem ser usados para avaliar via biliar?",
+        options: [
+          "Tomografia de abdome, colangiorressonância e CPRE",
+          "Eletrocardiograma, EEG e espirometria",
+          "Radiografia de joelho e ultrassom de ombro",
+          "Apenas hemograma, sem imagem"
+        ],
+        answer: 0,
+        why: "O PDF cita tomografia de abdome, colangiorressonância e CPRE na avaliação de icterícia obstrutiva. Os outros exames não avaliam adequadamente árvore biliar."
+      },
+      {
+        q: "33. Em queimado com rouquidão e estridor, qual deve ser a preocupação principal?",
+        options: [
+          "Indicação de intubação por risco de obstrução de via aérea",
+          "Alta hospitalar imediata",
+          "Apenas curativo local",
+          "Diagnóstico de TVP"
+        ],
+        answer: 0,
+        why: "Rouquidão e estridor sugerem lesão/edema de via aérea. Em queimados, isso indica risco de obstrução e pode exigir intubação precoce. TVP não explica esses sinais."
+      },
+      {
+        q: "34. A fórmula de reposição volêmica em queimados geralmente considera:",
+        options: [
+          "Volume em ml, superfície corporal queimada e peso em kg",
+          "Apenas idade do paciente",
+          "Apenas temperatura axilar",
+          "CA 19-9 e alfafetoproteína"
+        ],
+        answer: 0,
+        why: "A página de queimados mostra a lógica ML x SCQ x kg, ou seja, volume, superfície corporal queimada e peso. Marcadores tumorais não entram no cálculo de reposição volêmica."
+      },
+      {
+        q: "35. Sobre TVP, qual afirmação está correta?",
+        options: [
+          "É causada pela formação de trombo em veias do sistema profundo",
+          "É causada por tumor periampular obrigatoriamente",
+          "É sempre arterial e nunca venosa",
+          "É sinônimo de aneurisma de aorta abdominal"
+        ],
+        answer: 0,
+        why: "TVP é trombose venosa profunda, causada por formação de trombo/coágulo em veias profundas. Não é doença arterial nem aneurisma."
+      },
+      {
+        q: "36. Em TVP, qual localização tem pior prognóstico pelo maior risco de TEP?",
+        options: [
+          "TVP proximal, envolvendo veias poplíteas, femorais ou ilíacas",
+          "TVP distal isolada sempre sem risco",
+          "Veias superficiais da mão apenas",
+          "Artéria radial"
+        ],
+        answer: 0,
+        why: "O PDF destaca que a TVP proximal tem pior prognóstico pelo risco aumentado de TEP. TVP distal pode progredir, mas a proximal preocupa mais. Artéria radial não é veia profunda."
+      },
+      {
+        q: "37. O PDF cita que a TVP distal pode progredir para proximal em aproximadamente:",
+        options: [
+          "20% dos casos",
+          "1% dos casos",
+          "80% dos casos",
+          "100% dos casos"
+        ],
+        answer: 0,
+        why: "Na página de TVP, há referência a cerca de 20% de risco de progressão distal para proximal. As outras porcentagens não correspondem ao material."
+      },
+      {
+        q: "38. Em alta probabilidade clínica de TEP, a conduta diagnóstica indicada no material é:",
+        options: [
+          "Seguir para angiotomografia pelo protocolo de TEP",
+          "Pedir apenas CA 19-9",
+          "Fazer PAAF cervical",
+          "Aguardar 30 dias sem exame"
+        ],
+        answer: 0,
+        why: "O PDF destaca: TEP, diagnóstico, alta probabilidade, angiotomografia protocolo TEP. CA 19-9, PAAF e espera sem exame não confirmam TEP."
+      },
+      {
+        q: "39. Quais sinais/sintomas aparecem no material como sugestivos de TEP?",
+        options: [
+          "Taquipneia, síncope, dispneia e dor torácica",
+          "Colúria, acolia e vesícula palpável",
+          "Rouquidão, estridor e escarro com fuligem",
+          "Massa pulsátil epigástrica e choque"
+        ],
+        answer: 0,
+        why: "Na página de TEP aparecem taquipneia, síncope, dispneia e dor torácica. As outras opções apontam para icterícia obstrutiva, queimadura de via aérea e AAA roto."
+      },
+      {
+        q: "40. No AAA, além do tamanho, qual outro critério indica cirurgia?",
+        options: [
+          "Crescimento maior que 0,5 cm por ano",
+          "CA 19-9 elevado isoladamente",
+          "Rouquidão isolada",
+          "Dímero D negativo"
+        ],
+        answer: 0,
+        why: "O PDF cita indicação cirúrgica em AAA por crescimento maior que 0,5 cm ao ano, sintomático ou roto. CA 19-9, rouquidão e dímero D não indicam cirurgia de AAA."
+      },
+      {
+        q: "41. Qual tríade sugere aneurisma de aorta abdominal roto no material?",
+        options: [
+          "Dor abdominal súbita, massa pulsátil em epigastro e choque",
+          "Icterícia, colúria e acolia",
+          "Dispneia, síncope e dor torácica",
+          "Febre, trismo e massa cervical"
+        ],
+        answer: 0,
+        why: "A página de AAA cita roto com dor abdominal súbita, massa pulsátil em epigastro e choque. As demais combinações são de icterícia obstrutiva, TEP e abscesso cervical."
+      },
+      {
+        q: "42. Na classificação de massas cervicais, uma massa na linha média pode corresponder a:",
+        options: [
+          "Cisto tireoglosso ou cisto dermoide",
+          "Somente TEP",
+          "Somente AAA roto",
+          "Apenas queimadura inalatória"
+        ],
+        answer: 0,
+        why: "A tabela do PDF coloca, na linha média, malformações congênitas como cisto tireoglosso e cisto dermoide. TEP, AAA e queimadura não são massas cervicais de linha média."
+      },
+      {
+        q: "43. No triângulo anterior do pescoço, a tabela do PDF cita como possibilidades neoplásicas:",
+        options: [
+          "Linfomas, sarcomas, metástases linfonodais e tumores de origem vascular",
+          "Apenas rinite e sinusite",
+          "Apenas trombose venosa profunda",
+          "Apenas aneurisma de aorta abdominal"
+        ],
+        answer: 0,
+        why: "Na página de massas cervicais, o triângulo anterior inclui neoplasias como linfomas, sarcomas, metástases linfonodais e tumores vasculares. As outras opções não correspondem à tabela."
+      },
+      {
+        q: "44. No abscesso cervical, qual sinal aparece no PDF e sugere acometimento importante da região cervical/orofaríngea?",
+        options: [
+          "Trismo",
+          "Acolia fecal",
+          "Washout arterial",
+          "Claudicação intermitente"
+        ],
+        answer: 0,
+        why: "O PDF cita trismo, febre e massa cervical no abscesso cervical. Acolia é colestase, washout é HCC e claudicação é DAOP crônica."
+      },
+      {
+        q: "45. Em abscesso cervical, por que pode ser necessário solicitar tomografia de tórax?",
+        options: [
+          "Para avaliar complicação como mediastinite",
+          "Para medir CA 19-9",
+          "Para diagnosticar cisto tireoglosso simples",
+          "Para avaliar claudicação intermitente"
+        ],
+        answer: 0,
+        why: "A página de abscesso cervical cita complicação por mediastinite e tomografia de tórax. CA 19-9 é marcador, cisto tireoglosso é outra massa e claudicação é vascular periférico."
+      }
+    ];
+
+    const quizForm = document.getElementById("quizForm");
+
+    questions.forEach((item, index) => {
+      const card = document.createElement("div");
+      card.className = "question-card";
+
+      let html = `<div class="question-title">${item.q}</div><div class="options">`;
+
+      item.options.forEach((option, optIndex) => {
+        html += `
+          <label>
+            <input type="radio" name="q${index}" value="${optIndex}">
+            ${option}
+          </label>
+        `;
+      });
+
+      html += `</div>`;
+      card.innerHTML = html;
+      quizForm.appendChild(card);
+    });
+
+    function corrigirQuiz() {
+      let acertos = 0;
+      let reviewHTML = "";
+
+      questions.forEach((item, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        const userAnswer = selected ? Number(selected.value) : null;
+        const acertou = userAnswer === item.answer;
+
+        if (acertou) acertos++;
+
+        reviewHTML += `
+          <div class="review-item ${acertou ? "correct" : "wrong"}">
+            <h3>${item.q}</h3>
+            <div class="answer">Sua resposta: ${userAnswer !== null ? item.options[userAnswer] : "Não respondida"}</div>
+            <div class="answer">Resposta correta: <span class="green">${item.options[item.answer]}</span></div>
+            <div class="answer">Resultado: ${acertou ? "<span class='green'>Acertou</span>" : "<span class='red'>Errou</span>"}</div>
+            <div class="explanation"><strong>Por quê?</strong> ${item.why}</div>
+          </div>
+        `;
+      });
+
+      const total = questions.length;
+      const porcentagem = Math.round((acertos / total) * 100);
+      const erros = total - acertos;
+
+      document.getElementById("scoreText").innerHTML = `Você acertou ${acertos} de ${total} questões (${porcentagem}%). Errou ${erros}.`;
+      document.getElementById("review").innerHTML = reviewHTML;
+      document.getElementById("resultBox").style.display = "block";
+
+      window.scrollTo({ top: document.getElementById("resultBox").offsetTop, behavior: "smooth" });
+    }
+
+    function reiniciarQuiz() {
+      document.querySelectorAll("input[type='radio']").forEach(input => input.checked = false);
+      document.getElementById("resultBox").style.display = "none";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
